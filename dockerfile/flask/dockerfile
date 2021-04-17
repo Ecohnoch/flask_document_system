@@ -7,7 +7,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN mkdir -p /home/web
 WORKDIR /home/web
 # 添加依赖
-ADD requirements.txt /home/web/requirements.txt
+COPY requirements.txt /home/web/requirements.txt
 RUN pip3 install -i https://pypi.douban.com/simple/ -r requirements.txt
 
 # 使用gunicorn启动应用
