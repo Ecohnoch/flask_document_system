@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>文档重命名</title>
+<link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+  <style>
+  .layui-input{
+      width: 200px;
+  }
+</style>
+</head>
+<body>
+<form class="layui-form"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+  <div class="layui-form-item">
+    <label class="layui-form-label">输入文档重命名后的名称：</label>
+    <div class="layui-input-block">
+      <input id="name" type="text" name="" placeholder="请输入文档重命名后的名称" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <div class="layui-input-block">
+      <button class="layui-btn" lay-submit lay-filter="formDemo">提交</button>
+    </div>
+  </div>
+  <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+</form>
+<script src="/static/layui/layui.js"></script>
+<script>
+layui.use('form', function(){
+  var form = layui.form;
+  form.on('submit(formDemo)', function(data){
+    var value = document.getElementById("name").value
+    var $ = layui.$
+    $.ajax({
+      url: "/docs/rename/"
+      ,type: "POST"
+      ,data: {"name": value, url: window.parent.location.href}
+
+      ,success: function(result){
+        if(result.result == "OK"){
+            layer.msg("重命名成功！");
+            var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+            parent.layer.close(index);
+            window.parent.location.reload();
+        }else{
+            layer.msg("出现错误!");
+        }
+      }
+      ,error: function(msg){
+         console.log("error: ", msg);
+         layer.msg("发生未知错误："+msg);
+      }
+    });
+
+
+    return false;
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>上传文档</title>
+<link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+  <style>
+  .layui-input{
+      width: 200px;
+  }
+</style>
+
+<link rel="stylesheet" href="/static/dropzone/dropzone.css"/>
+
+</head>
+<body>
+<form class="layui-form">
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">文档名称</label>
+        <div class="layui-input-block">
+            <input type="text" id="name" required  lay-verify="required" placeholder="请输入文档名称" autocomplete="off" class="layui-input">
+         </div>
+    </div>
+
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">文档类型</label>
+        <div class="layui-input-block">
+            <select id="doc_type" lay-verify="">
+              <option value="">请选择一个文档类型</option>
+              <option value="周报">周报</option>
+              <option value="普通">普通</option>
+              <option value="论文">论文</option>
+            </select>
+<!--            <input type="text" id="doc_type" required  lay-verify="required" placeholder="请输入文档类型" autocomplete="off" class="layui-input">-->
+         </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div id="myDropzone" class="dropzone" style="" >
+        <p id="upload_status">暂未上传</p>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交文档</button>
+        </div>
+    </div>
+
+</form>
+<script type="text/javascript" src="/static/dropzone/dropzone.js"></script>
+<script>
+    Dropzone.autoDiscover = false;
+    var a = new Dropzone('#myDropzone',
+    {
+          url: "/docs/upload/",
+          init: function() {
+                dz = this; // Makes sure that 'this' is understood inside the functions below.
+
+                document.getElementById("myDropzone").addEventListener("click", function handler(e) {
+                    e.currentTarget.removeEventListener(e.type, handler);
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dz.processQueue();
+                });
+          },
+
+          uploadMultiple: false,
+          chunking: false,
+          forceChunking: true,
+          chunkSize: 10240,
+          parallelUploads: 1,
+          paramName: "file", // The name that will be used to transfer the file
+          maxFilesize: 102, // MB
+          maxFiles: 1,
+          acceptedFiles: '.pdf,.html',
+          dictDefaultMessage: `拖拽或者点击上传文档，仅支持pdf和html`, // message display on drop area
+          dictFallbackMessage: "浏览器版本不支持上传",
+          dictInvalidFileType: "无法上传非pdf和html的文件",
+          dictFileTooBig: "文件太大，超过 {{filesize}}. 最大文件大小: {{maxFilesize}}MiB.",
+          dictResponseError: "服务器错误: {{statusCode}}",
+          dictMaxFilesExceeded: "只能上传一个文件",
+          dictCancelUpload: "取消上传",
+          dictRemoveFile: "移除文件",
+          dictCancelUploadConfirmation: "确认删除？",
+          dictUploadCanceled: "上传已取消",
+          timeout: 0,  // custom options code
+          success : function(file, response){// 该文件已成功上传。获取服务器响应作为第二个参数。
+                    // console.log(file.name);
+                    console.log(response);
+                    // console.log(JSON.parse(response));
+                    if (response) {
+                        try {
+                            var res = response;
+                            if (res.status == 'success'){
+                                obj = document.getElementById('upload_status');
+                                obj.innerHTML = res.path;
+                                document.getElementById('upload_status').innerHTML != '已经上传文件: ' + res.path;
+                            } else {
+                                obj = document.getElementById('upload_status');
+                                obj.innerHTML = '暂未上传';
+                            }
+                        } catch (e) {
+                            console.log(e)
+                        }
+                    }
+            　　　　}
+        });
+        </script>
+<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script>
+layui.use('form', function(){
+  var form = layui.form;
+  form.on('submit(formDemo)', function(data){
+    var name  = document.getElementById("name").value;
+    var doc_type = document.getElementById("doc_type").value;
+    console.log(name, doc_type)
+
+    if (document.getElementById('upload_status').innerHTML != '暂未上传' && doc_type){
+        var request_data = {
+            "name": name,
+            "doc_type": doc_type,
+            "path": document.getElementById('upload_status').innerHTML};
+        var $ = layui.$
+        $.ajax({
+          url: "/docs/submit/"
+          ,type: "POST"
+          ,data: request_data
+          ,success: function(result){
+            if(result.message == "OK"){
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+                window.parent.location.reload();
+            }else{
+                layer.msg("提交失败："+result, {time: 500});
+            }
+          }
+          ,error: function(msg){
+             console.log("error: ", msg);
+             layer.msg("发生未知错误："+msg, {time: 500});
+          }
+        });
+    } else {
+        if (!doc_type){
+            layer.msg("请输入文档类型");
+        }else {
+            layer.msg("请上传文件");
+        }
+    }
+    return false;
+  });
+});
+</script>
+
+</body>
+</html>
