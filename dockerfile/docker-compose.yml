@@ -1,0 +1,22 @@
+version: '2.2'
+services:
+  mongo:
+    build: ./mongo
+    volumes:
+      - "./mongo/db:/data/db"
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: my_root
+      MONGO_INITDB_ROOT_PASSWORD: my_123456
+  flask:
+    build: ./flask
+    links:
+      - mongo
+    ports:
+      - "5000:5000"
+    expose:
+      - "5000"
+    volumes:
+      - ../flask_document_system:/home/web
