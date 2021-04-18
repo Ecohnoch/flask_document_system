@@ -23,3 +23,22 @@
 上传的文档存放的路径在configs下的app_store_dir指定的位置，修改这个文件夹即可改变文档存放的路径。
 
 如果需要用户登陆管理的话，接口都保留了，直接套层皮即可。
+
+
+### 四、Docker部署
+
+仓库拉下来之后，进入dockerfile文件夹，运行:
+
+```
+docker-compose up
+```
+
+等待便可构建好mongo和flask两个镜像，并且会直接运行。然后直接输入http://127.0.0.1:5000/docs即可。
+
+注意：这里mongo镜像初始化是默认的管理员用户名密码+docs数据库用户名和密码，如果需要修改的话请修改dcokerfile/docker-compose.yml和dockerfile/mongo/setup.sh里的管理员用户名密码和docs数据库用户名和密码。
+
+两个镜像：
+
+flask: [https://hub.docker.com/repository/docker/ecohnoch/flask_document](https://hub.docker.com/repository/docker/ecohnoch/flask_document)
+
+mongo: [https://hub.docker.com/repository/docker/ecohnoch/mongo](https://hub.docker.com/repository/docker/ecohnoch/mongo)
