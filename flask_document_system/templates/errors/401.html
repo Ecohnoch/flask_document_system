@@ -1,0 +1,39 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>该页面不存在</title>
+
+<link rel="stylesheet" href="/static/css/errors/401.css">
+
+<script src="/static/js/jquery.min.js"></script>
+
+</head>
+<body>
+<div class="auto">
+	<div class="container">
+		<div class="settings">
+			<i class="icon"></i>
+			<h4>很抱歉！请先登录！</h4>
+			<p><span id="num">5</span> 秒后将自动跳转到首页</p>
+			<div>
+				<a href="/login" title="登录页">登录页</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	//倒计时跳转到首页的js代码
+	var $_num=$("#num");
+	var num=parseInt($_num.html());
+	var numId=setInterval(function(){
+		num--;
+		$_num.html(num);
+		if(num===0){
+			//跳转地址写在这里
+			window.location.href="/login";
+		}
+	},1000);
+</script>
+
+
+</body></html>

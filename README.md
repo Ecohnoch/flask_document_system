@@ -14,9 +14,9 @@
 
 配置好数据库并且相关的配置都设置成功后，即可直接运行run.py就可以启动文档系统了。
 
-启动后直接访问：ip:端口/docs
+启动后直接访问：ip:端口
 
-例如： http://localhost:10086/docs
+例如： http://localhost:10086
 
 ### 三、配置说明
 
@@ -33,7 +33,7 @@
 docker-compose up
 ```
 
-等待便可构建好mongo和flask两个镜像，并且会直接运行。然后直接输入http://127.0.0.1:5000/docs即可。
+等待便可构建好mongo和flask两个镜像，并且会直接运行。然后直接输入http://127.0.0.1:5000即可。
 
 注意：这里mongo镜像初始化是默认的管理员用户名密码+docs数据库用户名和密码，如果需要修改的话请修改dcokerfile/docker-compose.yml和dockerfile/mongo/setup.sh里的管理员用户名密码和docs数据库用户名和密码。
 

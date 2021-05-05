@@ -9,7 +9,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
   <title>Document System</title>
-  <script type="text/javascript" src="/static/js/tasks_scheduler.js"></script>
   <link rel="stylesheet" href="/static/layui/css/layui.css">
 
   <style>
@@ -28,9 +27,9 @@
     <!-- 头部区域（可配合layui已有的水平导航） -->
     <ul class="layui-nav layui-layout-left">
       <li class="layui-nav-item layui-this">
-        <a href="/docs">文档</a>
+        <a href="/">文档</a>
         <dl class="layui-nav-child">
-        <dd><a href="/docs">进入文档</a></dd>
+        <dd><a href="/">进入文档</a></dd>
         <dd><a id="submit_docs">上传文档</a></dd>
         </dl>
       </li>
@@ -95,6 +94,9 @@
   <button id="addButton" type="button" class="layui-btn layui-btn-sm">
     <i class="layui-icon">&#xe654;</i>
   </button>
+  <button id="addCommentButton" type="button" class="layui-btn layui-btn-sm">
+    <i class="layui-icon">&#xe64e;</i>
+  </button>
   <button id="renameButton" type="button" class="layui-btn layui-btn-sm">
     <i class="layui-icon">&#xe642;</i>
   </button>
@@ -102,6 +104,36 @@
     <i class="layui-icon">&#xe640;</i>
   </button>
   </div>
+
+  <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>评论</legend>
+  </fieldset>
+    <div class="layui-collapse" lay-filter="test">
+      <div class="layui-colla-item">
+        <h2 class="layui-colla-title">展开/折叠所有评论</h2>
+        <div class="layui-colla-content layui-show">
+          <div class="layui-collapse">
+          {% for comment_item in comments %}
+          <div class="layui-colla-item">
+            <h2 class="layui-colla-title">{{ comment_item.title }}
+              <button comment_id="{{ comment_item.id }}" name="commentDelete" type="button" class="layui-btn layui-btn-primary layui-btn-sm">
+                <i class="layui-icon">&#xe640;</i>
+              </button>
+            </h2>
+            <div class="layui-colla-content layui-show">
+              <textarea readonly class="layui-textarea" style="resize:none">{{ comment_item.comment }}</textarea>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        </div>
+      </div>
+      </div>
+
+  <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>文档显示</legend>
+  </fieldset>
+
   <style>
   .pdfobject-container {
       width : 60rem;
@@ -160,6 +192,17 @@ layui.use(['form', 'layedit', 'laydate','element','jquery'], function() {
     });
   });
 
+  $('#addCommentButton').on('click', function(){
+    layer.open({
+        type:2,
+        title: "文档批注",
+        shadeClose: true,
+        shade: 0.8,
+        content: '/docs/comment_page',
+        area: ['800px', '600px']
+    });
+  });
+
   $('#deleteButton').on('click', function(){
      layer.confirm('确认删除该文档？', function(index){
         layer.close(index);
@@ -192,6 +235,34 @@ layui.use(['form', 'layedit', 'laydate','element','jquery'], function() {
         area: ['800px', '600px']
     });
   });
+
+
+  var doc_comment_list = document.getElementsByName('commentDelete');
+  for (var i = 0; i < doc_comment_list.length; i++){
+    var each_item = doc_comment_list[i];
+    var comment_id = each_item.getAttribute('comment_id');
+    each_item.addEventListener('click', function(){
+      layer.confirm('确认删除该评论？', function(index){
+        layer.close(index);
+        $.ajax(
+          "/docs/delete_comment", {
+          method: 'POST',
+          dataType: 'json',
+          data: {comment_id: comment_id},
+          success: function(data) {
+              if (data.result == 'OK'){
+                layer.msg("删除成功");
+                window.location.reload();
+              } else if (data.result == '403'){
+                layer.msg("没有权限删除");
+              } else {
+                layer.msg("发生错误");
+              }
+            }
+        });
+     });
+    }, false);
+  }
 
 });
 </script>
